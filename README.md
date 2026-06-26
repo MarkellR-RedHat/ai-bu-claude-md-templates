@@ -1,6 +1,8 @@
 # CLAUDE.md Templates
 
-**Claude generates Python that looks like Go when it has no CLAUDE.md.**
+Part of the [AI BU](https://github.com/MarkellR-RedHat/ai-bu-hub) tool suite.
+
+## Claude generates Python that looks like Go when it has no CLAUDE.md.
 
 Without project conventions, Claude guesses. It picks `requests` instead of `httpx`, skips type hints, uses `print()` instead of structured logging, and returns raw dicts instead of Pydantic models. The code compiles, but it would never pass review.
 
@@ -163,7 +165,7 @@ Answer three questions about your project and get a recommendation.
 
 ## Why These Templates Work
 
-Most CLAUDE.md files are too vague to change behavior. "Write clean code" tells Claude nothing it does not already do. These templates are specific enough to shift actual output.
+Most CLAUDE.md files are too vague to change behavior. "Write clean code" tells Claude nothing it does not already know. These templates are specific enough to shift actual output.
 
 | Vague CLAUDE.md | These templates |
 |---|---|
@@ -193,6 +195,26 @@ Two slash commands ship with this repo for template management inside Claude Cod
 ```
 
 To use these commands, add this repo as a command source in your Claude Code settings, or copy the `commands/` directory into your project's `.claude/commands/` directory.
+
+### Typical workflow
+
+1. **Run `/suggest-template`** in your project directory to detect your stack and get a recommendation.
+2. **Install the template** with `./install.sh -t <name> -d ~/your-project` or pick interactively.
+3. **Search for TODO markers** in the installed CLAUDE.md and fill in your project-specific details.
+4. **Run `/compose-template`** if your project spans multiple domains (e.g., `python + kubernetes`).
+5. **Start prompting.** Open Claude Code in that directory and the conventions take effect immediately.
+
+**The detail that saves the most rework:** Fill in the `<!-- TODO -->` markers before your first real prompt. On a team of four, one engineer spent 45 minutes retrofitting type hints and structured logging after Claude generated 12 files without them. Filling in the template's stack section took 3 minutes and would have prevented every one of those fixes.
+
+### Pairs with other AI BU tools
+
+| When you need to... | Use |
+|----------------------|-----|
+| Generate proposals for a conference CFP | [`/cfp`](https://github.com/MarkellR-RedHat/ai-bu-cfp-generator) drafts submission-ready abstracts |
+| Review content from a specific audience's perspective | [`/review-as-persona`](https://github.com/MarkellR-RedHat/ai-bu-review-as-persona) plays a skeptical reviewer or a target user |
+| Check writing style before publishing | [`/style-check`](https://github.com/MarkellR-RedHat/ai-bu-style-checker) catches jargon, passive voice, and filler |
+| Build a slide deck from your documented project | [`/slides`](https://github.com/MarkellR-RedHat/ai-bu-slide-outliner) generates a focused talk outline |
+| Set up new team members on Claude Code | [`/onboarding-kit`](https://github.com/MarkellR-RedHat/ai-bu-onboarding-kit) walks new hires through setup and conventions |
 
 ## Customizing a Template
 
@@ -236,7 +258,7 @@ Examples:
 
 ## Contributing
 
-Contributions are welcome. If you have a template for a project type not covered here, open a PR.
+Open an issue or PR. If a template gave you bad output, tell us what Claude generated and what you expected. If you have a template for a project type not covered here, send it.
 
 ### Template requirements
 
