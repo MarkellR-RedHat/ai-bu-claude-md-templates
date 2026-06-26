@@ -420,6 +420,17 @@ These are patterns Claude tends to produce in conference proposals that reviewer
 
 **Not differentiating from similar talks.** Claude produces abstracts that could describe any talk on the topic. Mention what makes YOUR approach or experience unique. Include specific data, benchmarks, or lessons from real deployments.
 
+## Related Templates and Commands
+
+If your work spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. For proposal repos, it detects CFP-related directories and proposal markdown files.
+- **`/compose-template proposals + [other]`**: Merge this template with another. Common combinations:
+  - `proposals + content-writing` for teams that manage conference proposals and blog posts in the same repo (adds editorial standards, SEO, content lifecycle)
+  - `proposals + general-devrel` for DevRel teams where proposal writing is part of a broader content and community strategy
+- **`content-writing` template**: If you repurpose conference talks into blog posts (or vice versa), that template provides editorial standards, blog structure, SEO, and Red Hat product naming conventions.
+- **`general-devrel` template**: If your proposals are part of a broader DevRel effort that includes code samples, workshops, and community building, that template covers event planning checklists, demo guidelines, and developer journey mapping.
+
 ## Review Checklist
 
 Before submitting a proposal:

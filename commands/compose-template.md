@@ -547,6 +547,56 @@ Use kind. Deploy the full stack (operator, CRDs, sample CR). Verify the operator
 - Domain labels (`[Python]`, `[Kubernetes]`) tell you where each rule comes from
 - Specific thresholds and tool names, not "robust" or "comprehensive"
 
+## Edge Cases
+
+Handle these situations explicitly. Do not paper over them with generic advice.
+
+### Multi-Language Projects (3+ Templates)
+
+When composing three or more templates (e.g., `go + kubernetes + helm-chart + cli-tool`):
+
+1. **Identify the primary language template.** This template drives the project structure, dependency management, and build commands. All other templates graft onto it.
+2. **Group templates by layer.** Language templates (go, python, rust) form the base. Infrastructure templates (kubernetes, helm-chart, operator-sdk) add deployment. Domain templates (ai-ml, data-pipeline, cli-tool) add specialized patterns.
+3. **Avoid section bloat.** With 3+ templates, merged sections like "Common Pitfalls" or "Security Considerations" can become overwhelming. Keep sub-headers but limit each domain's entries to the 5 most impactful items. Add a note: "See the full [template-name] template for additional guidance."
+4. **Consolidate the Review Checklist.** Do not produce a 50-item checklist. Group by activity (pre-commit, pre-merge, pre-release) rather than by template source.
+5. **Warn the user.** If composing 4+ templates, add a note at the top of the output: "This CLAUDE.md combines guidance from [N] templates. Consider whether your project genuinely spans all of these domains, or whether some belong in subproject-level CLAUDE.md files instead."
+
+### Existing Conflicting CLAUDE.md
+
+When the user's project already has a `CLAUDE.md` and they run `/compose-template`:
+
+1. Read the existing `CLAUDE.md` first.
+2. Treat it as an additional "template" in the merge. Existing project-specific rules (custom lint configs, team conventions, repo-specific commands) take priority over template defaults.
+3. Never discard project-specific content from the existing file. If it conflicts with a template rule, keep the project-specific version and add a comment: `<!-- Template suggests [X], but this project uses [Y] per team convention -->`.
+4. In the output, clearly mark which sections came from the existing file vs. the templates: `[Existing]` label alongside the `[Python]` and `[Kubernetes]` labels.
+5. If the existing `CLAUDE.md` already covers a section well, do not duplicate it from the template. Reference it: "Your existing CLAUDE.md already covers this section. Keeping your version."
+
+### Projects with No Tests, CI, or Linter
+
+When composing templates for a project that lacks testing, CI, or linter setup:
+
+1. Include the testing and CI sections from the templates as-is. These are the most valuable sections for an under-tooled project.
+2. Add a callout at the top of the Testing section: "This project does not currently have a test suite. The patterns below are a starting point. Adapt the directory structure and test commands to match your project's needs."
+3. For linting, include the combined linter configuration from all relevant templates. Mark it as a starting point, not a requirement: "Add this to your `pyproject.toml` (or equivalent) to enable the recommended linters."
+4. Do not skip or minimize these sections just because the project does not have them yet. The whole point of the template is to fill these gaps.
+
+### Unknown Frameworks in Composition
+
+When the user requests a composition that includes a framework not covered by any template (e.g., `django + kubernetes` when there is no Django template):
+
+1. Use the closest language template for the framework's language (e.g., `python-project` for Django).
+2. Note the gap in the composed output's Project Overview: "This CLAUDE.md uses the Python template as a base. Django-specific patterns (views, URL routing, ORM, management commands, middleware) are not covered by the available templates and should be added based on your project's conventions."
+3. Still compose the other templates normally. The Kubernetes sections are just as relevant regardless of the web framework.
+4. Never generate framework-specific guidance you do not have a template for. Acknowledge the gap and move on.
+
+### Contradictory Template Combinations
+
+Some template combinations include guidance that fundamentally conflicts:
+
+- `cli-tool + fastapi`: CLI tools and web services have different entry points, lifecycle models, and output patterns. Note this: "These templates serve different application types. If your project is a CLI that also runs a local API server, use the CLI template as the base and add the FastAPI dependency injection and Pydantic patterns."
+- `operator-sdk + helm-chart`: Many operators deploy Helm charts, but the operator template and helm-chart template have different scopes. Note: "The operator-sdk template covers the Go controller code. The helm-chart template covers the chart your operator may deploy. Keep them in separate sections, not merged."
+- `content-writing + python-project`: These are different domains. If combined, keep them completely separate: content guidance in one block, Python code guidance in another. Do not try to merge their conventions.
+
 ## Error Handling
 
 If the user provides a template name that does not match any known template:

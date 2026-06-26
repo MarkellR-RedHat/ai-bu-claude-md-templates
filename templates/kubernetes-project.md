@@ -772,6 +772,22 @@ Use Cluster API (CAPI) for declarative cluster lifecycle management. Define clus
 
 **Missing PodDisruptionBudget.** Claude creates Deployments for production workloads without a PDB. Without a PDB, cluster upgrades and node drains can take down your entire application simultaneously.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. Use `/suggest-template deep` to detect Kubernetes markers (CRDs, controller-runtime, Helm charts, kustomize overlays).
+- **`/compose-template kubernetes + [other]`**: Merge this template with another. Common combinations:
+  - `kubernetes + go` for Go services or controllers deployed on Kubernetes
+  - `kubernetes + python` for Python services deployed on Kubernetes or OpenShift
+  - `kubernetes + helm-chart` for projects that include both Kubernetes manifests and Helm charts
+  - `kubernetes + operator-sdk` for full operator development (this template covers cluster-side concerns; the operator-sdk template covers controller code)
+  - `kubernetes + ai-ml` for ML workloads on Kubernetes with GPU scheduling and resource management
+- **`operator-sdk` template**: If your project is a Kubernetes operator built with controller-runtime and Operator SDK, that template goes deeper on reconciliation loops, finalizers, CRD versioning, OLM packaging, and webhook design.
+- **`helm-chart` template**: If your project's primary deliverable is a Helm chart, that template provides deeper coverage of template patterns, values schema, hooks, and OCI registry publishing.
+- **`go-project` template**: If your operator or controller is written in Go, that template adds Go-specific conventions for error handling, concurrency, and testing.
+- **`python-project` template**: If your Kubernetes tooling or scripts are in Python, that template adds ruff, mypy, and pytest patterns.
+
 ## Review Checklist
 
 Before merging:

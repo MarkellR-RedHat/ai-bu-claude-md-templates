@@ -789,6 +789,19 @@ podman run -p 8000:8000 --env-file .env myapp:latest
 
 **Creating N+1 query patterns.** Claude accesses ORM relationships in loops without eager loading. Use `selectinload()` or `joinedload()` on relationship queries to avoid N+1.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. Use `/suggest-template deep` to parse `pyproject.toml` dependencies and detect FastAPI patterns like `app = FastAPI()`.
+- **`/compose-template fastapi + [other]`**: Merge this template with another. Common combinations:
+  - `fastapi + ai-ml` for FastAPI services that serve ML models (adds vLLM integration, GPU profiling, model evaluation patterns)
+  - `fastapi + kubernetes` for FastAPI services deployed on Kubernetes or OpenShift (adds pod security, RBAC, health probes)
+  - `fastapi + data-pipeline` for FastAPI APIs that trigger or expose data pipeline results
+- **`python-project` template**: This FastAPI template builds on Python foundations. If your project does not use FastAPI but uses other Python web frameworks (Flask, Django), start with the `python-project` template instead.
+- **`ai-ml-project` template**: If your FastAPI service handles model inference, that template adds GPU memory management, prompt injection prevention, continuous batching patterns, and model card standards.
+- **`kubernetes-project` template**: If your FastAPI service runs on OpenShift or Kubernetes, that template adds deployment manifests, network policies, and monitoring setup.
+
 ## Review Checklist
 
 Before merging:

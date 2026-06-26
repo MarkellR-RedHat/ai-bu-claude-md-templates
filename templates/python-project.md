@@ -718,6 +718,20 @@ These are patterns Claude tends to produce that will fail code review. Watch for
 
 **Using `time.sleep()` in async code.** Claude uses `time.sleep()` instead of `await asyncio.sleep()` in async functions. `time.sleep()` blocks the entire event loop.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. Use `/suggest-template deep` for a thorough scan of dependencies, imports, and CI configuration.
+- **`/compose-template python + [other]`**: Merge this template with another. Common combinations:
+  - `python + kubernetes` for Python services deployed on Kubernetes or OpenShift
+  - `python + ai-ml` for ML projects built on Python foundations
+  - `python + data-pipeline` for data engineering work in Python
+  - `python + cli-tool` for Click or Typer CLI applications
+- **`fastapi-project` template**: If your project uses FastAPI, that template has deeper coverage of Pydantic v2, SQLAlchemy 2.0, and async API patterns. Use it instead of this one.
+- **`ai-ml-project` template**: If your project involves PyTorch, model serving, or GPU workloads, that template adds training, inference, and experiment tracking patterns on top of the Python foundations here.
+- **`data-pipeline` template**: If your project processes data with Spark, Beam, or Airflow, that template adds schema evolution, idempotency, and data quality patterns.
+
 ## Review Checklist
 
 Before merging, verify every item. This is not a formality.

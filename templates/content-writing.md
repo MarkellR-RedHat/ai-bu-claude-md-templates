@@ -447,6 +447,19 @@ content/
 
 **Missing calls to action.** Claude ends posts without telling the reader what to do next. Every post needs a clear next step: try the tutorial, read the docs, join the community, open an issue.
 
+## Related Templates and Commands
+
+If your work spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. For content projects, it detects blog frontmatter, static site generators (Hugo, Jekyll), and editorial directory structures.
+- **`/compose-template content-writing + [other]`**: Merge this template with another. Common combinations:
+  - `content-writing + documentation` for projects that produce both blog content and product documentation (adds Diataxis framework, Vale linting, versioned docs patterns)
+  - `content-writing + proposals` for teams that write blog posts and conference proposals in the same repo (adds CFP structure, talk design, audience analysis)
+  - `content-writing + general-devrel` for DevRel teams managing content alongside code samples and community work
+- **`documentation` template**: If your project is primarily a docs site (Antora, Hugo, MkDocs), that template covers Diataxis content types, docs-as-code workflow, Vale linting, and versioned documentation. Use it instead of this one for documentation projects.
+- **`proposals` template**: If you write conference proposals alongside blog posts, that template provides CFP structure, abstract patterns, talk design, and demo planning.
+- **`general-devrel` template**: If your content work is part of a broader DevRel effort (code samples, workshops, community engagement), that template covers the full developer journey and content strategy framework.
+
 ## Review Checklist
 
 Before submitting content for review:

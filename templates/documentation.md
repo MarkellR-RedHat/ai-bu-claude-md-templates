@@ -498,6 +498,18 @@ Thumbs.db
 
 **Putting critical information only in code blocks.** Claude embeds important configuration details or requirements in code samples without explaining them in surrounding text. Code blocks are not indexed by all search engines. State the important points in text and illustrate with code.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type. Use `/suggest-template deep` to detect your docs framework (Antora, Hugo, MkDocs), Vale configuration, and CI validation setup.
+- **`/compose-template documentation + [other]`**: Merge this template with another. Common combinations:
+  - `documentation + content-writing` for projects that produce both product docs and blog content (adds editorial standards, SEO, social media promotion)
+  - `documentation + general-devrel` for DevRel teams where docs are part of a broader developer experience effort (adds developer journey mapping, code sample standards)
+  - `documentation + python` or `documentation + go` for projects where the docs site and the application code live in the same repo
+- **`content-writing` template**: If your project includes blog posts or marketing content alongside documentation, that template provides editorial voice, SEO deep dive, content lifecycle, and Red Hat product naming conventions.
+- **`general-devrel` template**: If your documentation is part of a DevRel effort that includes tutorials, workshops, and community programs, that template covers the full developer journey and content strategy framework.
+
 ## Review Checklist
 
 Before merging documentation changes:

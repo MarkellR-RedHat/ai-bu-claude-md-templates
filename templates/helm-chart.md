@@ -890,6 +890,19 @@ Makefile
 
 **Not bumping Chart.yaml version.** Claude modifies chart templates without incrementing the `version` field in Chart.yaml. Every chart change needs a version bump.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type. Use `/suggest-template deep` to parse `Chart.yaml` dependencies, analyze template patterns, and detect whether the chart deploys an operator, a web service, or another workload type.
+- **`/compose-template helm-chart + [other]`**: Merge this template with another. Common combinations:
+  - `helm-chart + kubernetes` for Helm charts that are part of a larger Kubernetes deployment project (adds kustomize overlays, GitOps patterns, envtest)
+  - `helm-chart + go` for Go projects that include a Helm chart for deployment (adds Go conventions alongside chart patterns)
+  - `helm-chart + operator-sdk` for operators distributed via Helm or operators that deploy Helm charts
+- **`kubernetes-project` template**: If your Helm chart is one part of a larger Kubernetes project with CRDs, RBAC manifests, or kustomize overlays, that template covers the broader cluster configuration.
+- **`operator-sdk` template**: If your chart deploys a Kubernetes operator or if the operator itself is packaged as a Helm chart, that template covers controller-runtime patterns, CRD design, and OLM.
+- **`go-project` or `python-project` template**: If the application your chart deploys is developed in the same repo, combine with the language template so the CLAUDE.md covers both application code and chart packaging.
+
 ## Review Checklist
 
 Before merging:

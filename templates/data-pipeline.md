@@ -647,6 +647,19 @@ podman build -t pipeline-runner:latest .
 - [ ] Type hints on all function signatures
 - [ ] No hardcoded paths, credentials, or environment-specific values
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type. Use `/suggest-template deep` to detect pipeline frameworks (Spark, Beam, Flink), orchestrators (Airflow, Tekton), and data quality tools (Great Expectations, Soda).
+- **`/compose-template data-pipeline + [other]`**: Merge this template with another. Common combinations:
+  - `data-pipeline + python` for Python-based pipelines (adds ruff, mypy, pytest patterns for pipeline code)
+  - `data-pipeline + kubernetes` for pipelines deployed on Kubernetes with Spark-on-K8s, Airflow on OpenShift, or Tekton-based orchestration
+  - `data-pipeline + ai-ml` for end-to-end ML systems with data ingestion feeding into model training and evaluation
+- **`python-project` template**: Most data pipelines are written in Python. That template provides deeper coverage of ruff, mypy strict mode, and pytest fixtures that apply to pipeline test code.
+- **`ai-ml-project` template**: If your pipeline feeds into model training, feature engineering, or evaluation, that template covers experiment tracking, model versioning, and GPU workload patterns.
+- **`kubernetes-project` template**: If your pipeline runs on Kubernetes (Spark operator, Airflow on OpenShift, Argo Workflows), that template adds resource limits, pod security, and monitoring patterns.
+
 ### Data Correctness
 - [ ] Pipeline is idempotent (safe to re-run for any partition)
 - [ ] Schema explicitly defined, not inferred

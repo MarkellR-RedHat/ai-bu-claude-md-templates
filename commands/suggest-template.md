@@ -328,6 +328,91 @@ When multiple templates could fit, show a comparison table relevant to the detec
 
 Adapt the comparison columns to match the actual templates being considered.
 
+## Edge Cases
+
+Handle these situations explicitly. Do not ignore them or fall back to generic advice.
+
+### Multi-Language Projects
+
+A project may contain multiple languages (e.g., Go backend + Python scripts + Helm charts, or Rust CLI + Python bindings). When you detect more than one primary language:
+
+1. Identify which language is the **primary** (most source files, main build target, CI focus) and which are **secondary** (scripts, tooling, config generators).
+2. Recommend the primary template for the dominant language.
+3. List secondary templates with a note on what each adds.
+4. Suggest `/compose-template` with the specific combination: "Run `/compose-template go + helm-chart + kubernetes` to merge these into one CLAUDE.md."
+5. If the project is a monorepo with independent services in different languages, recommend running `/suggest-template` from each service directory instead of from the repo root.
+
+Example output for a multi-language project:
+
+```
+**Primary match: go-project**
+**Confidence: High**
+
+Evidence:
+- `go.mod` with module path `github.com/org/myoperator`, Go 1.22
+- `cmd/manager/main.go` initializes controller-runtime
+- 85% of source files are `.go`
+
+**Secondary matches:**
+- `helm-chart`: Found `deploy/helm/myoperator/Chart.yaml` with 4 templates
+- `kubernetes-project`: Found `config/crd/bases/`, `config/rbac/`, envtest setup in CI
+
+**Next step:** Run `/compose-template go + helm + kubernetes` to produce a unified CLAUDE.md covering all three layers.
+```
+
+### Existing Conflicting CLAUDE.md
+
+When the project already has a `CLAUDE.md`:
+
+1. Always read the existing file in full (both quick scan and deep scan modes).
+2. Compare its sections against the recommended template section by section.
+3. Identify **gaps** (sections the template has that the existing file lacks).
+4. Identify **conflicts** (sections where the existing file and the template give different guidance).
+5. Never recommend replacing the existing file outright. Instead, suggest specific additions.
+6. If the existing `CLAUDE.md` is comprehensive and well-maintained, say so. Do not force a template recommendation when the project does not need one.
+
+Output format when an existing `CLAUDE.md` is found:
+
+```
+### Comparison with Existing CLAUDE.md
+
+Your current CLAUDE.md covers:
+- [list sections it handles well]
+
+Gaps the template would fill:
+- [specific missing section]: [why it matters]
+- [specific missing section]: [why it matters]
+
+Conflicts:
+- [section]: Your file says [X], the template says [Y]. [recommendation on which to keep and why]
+
+Suggestion: Add these sections from the [template-name] template:
+1. [section name] - [one-line reason]
+2. [section name] - [one-line reason]
+
+Or run `/compose-template` to merge the template with your existing file: review the output and cherry-pick the sections you want.
+```
+
+### Projects with No Tests, CI, or Linter
+
+Some projects have no test suite, no CI pipeline, and no linter configured. Do not pretend this is fine, and do not ignore it.
+
+1. Note the absence explicitly in the "What I Found" table: `Testing | (none found) | No test files, no test config, no test directory`.
+2. Still recommend a template. The template's testing and CI sections become the most valuable part of the recommendation.
+3. In the "What this template adds" section, call out the missing tooling as the primary value: "This template provides a complete pytest setup with fixture patterns, coverage thresholds, and CI workflow examples that your project currently lacks."
+4. If no linter is configured, note it and reference the template's linter section: "Your project has no ruff or mypy configuration. The template includes a ready-to-use `pyproject.toml` snippet with ruff rules and mypy strict mode."
+5. Do not lower confidence just because tooling is missing. Confidence measures how well the template matches the project type, not how mature the project is.
+
+### Unknown or Uncommon Frameworks
+
+When the project uses a framework or toolset not covered by any template:
+
+1. Set confidence to Low or Medium and explain why.
+2. Recommend the **closest language-level template** as a starting point (e.g., `python-project` for a Django app, `go-project` for a Go project using an uncommon router).
+3. List the specific framework and note that the template does not cover it: "Your project uses Django, which is not covered by a dedicated template. The `python-project` template covers pytest, ruff, mypy, and general Python patterns that still apply. Django-specific patterns (views, models, migrations, management commands) will need to be added manually."
+4. If a combination of templates partially covers the gap, suggest it. For example, a Flask app could benefit from parts of `fastapi-project` (Pydantic, SQLAlchemy patterns) even though it uses a different framework.
+5. Never fabricate template content for frameworks you do not have templates for. Be honest about coverage gaps.
+
 ## Important Rules
 
 1. Never guess. If you cannot find clear signals, say so and set confidence to Low.

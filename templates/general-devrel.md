@@ -481,6 +481,20 @@ Review content and community metrics monthly. Review adoption and funnel metrics
 
 **Not dating content.** Claude creates blog posts and tutorials without clear publication dates or version references. Always include when the content was written and what versions it covers. Stale undated content erodes trust faster than missing content.
 
+## Related Templates and Commands
+
+If your work spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type. For DevRel repos, it detects code sample directories, workshop materials, demo scripts, and community tooling.
+- **`/compose-template general-devrel + [other]`**: Merge this template with another. Common combinations:
+  - `general-devrel + content-writing` for DevRel teams focused on blog posts and editorial content (adds SEO, editorial calendar, content lifecycle, Red Hat product naming)
+  - `general-devrel + documentation` for DevRel teams maintaining product docs alongside tutorials and samples (adds Diataxis framework, Vale linting, versioned docs)
+  - `general-devrel + proposals` for DevRel teams managing conference proposals as part of their developer advocacy work (adds CFP structure, talk design, abstract patterns)
+  - `general-devrel + python` or `general-devrel + go` for DevRel repos with production-quality code samples in a specific language (adds language-specific linting, testing, and conventions)
+- **`content-writing` template**: For deeper editorial guidance on blog posts, including SEO, meta descriptions, accessibility standards, and social media promotion patterns.
+- **`proposals` template**: For conference talk proposal structure, abstract writing patterns, and demo planning checklists.
+- **`documentation` template**: For product documentation projects using Antora, Hugo, or MkDocs with Vale linting and docs-as-code workflows.
+
 ## Review Checklist
 
 Before publishing any DevRel content, verify the following:

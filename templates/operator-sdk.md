@@ -656,6 +656,19 @@ make undeploy && make uninstall
 
 **Using `log.Error` and returning the error.** Claude logs an error and then returns it from Reconcile. The controller-runtime framework also logs returned errors. This creates duplicate log entries. Either log the error with context and return `nil`, or return the error and let the framework log it.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type. Use `/suggest-template deep` to detect the `PROJECT` file, `api/` directory with versioned subdirectories, and controller-runtime imports in `go.mod`.
+- **`/compose-template operator-sdk + [other]`**: Merge this template with another. Common combinations:
+  - `operator-sdk + go` for the full Go development stack (adds Go conventions, error handling, concurrency patterns alongside operator-specific guidance)
+  - `operator-sdk + kubernetes` for broader cluster configuration (adds RBAC deep dives, network policies, pod security standards beyond what the operator code touches)
+  - `operator-sdk + helm-chart` for operators that deploy Helm charts as part of reconciliation
+- **`go-project` template**: This operator template focuses on controller-runtime patterns. The `go-project` template has deeper coverage of Go idioms, error wrapping, table-driven tests, and concurrency that apply to all Go code in the operator.
+- **`kubernetes-project` template**: If your operator interacts with cluster infrastructure beyond its own CRDs (network policies, storage classes, node affinity), that template covers the Kubernetes-side concerns.
+- **`helm-chart` template**: If your operator deploys a Helm chart during reconciliation, or if you distribute the operator itself via Helm, that template covers chart structure, values schema, and testing patterns.
+
 ## Review Checklist
 
 Before merging:

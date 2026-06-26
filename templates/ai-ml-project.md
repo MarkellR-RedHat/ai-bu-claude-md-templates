@@ -826,6 +826,20 @@ print(f"p50={np.percentile(latencies, 50):.3f}s "
 
 **Creating evaluation metrics after seeing results.** Claude defines evaluation criteria post-hoc to justify results. Define task-specific metrics before starting training or fine-tuning. Compare against the base model and report the delta.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. Use `/suggest-template deep` to detect ML framework imports (torch, transformers, vllm) and model-serving patterns.
+- **`/compose-template ai-ml + [other]`**: Merge this template with another. Common combinations:
+  - `ai-ml + fastapi` for ML model serving behind a FastAPI HTTP layer (adds Pydantic v2 request/response models, async API patterns, dependency injection)
+  - `ai-ml + kubernetes` for ML workloads on Kubernetes or OpenShift AI (adds pod security, GPU scheduling, node affinity, RBAC)
+  - `ai-ml + data-pipeline` for end-to-end ML systems with data ingestion, feature engineering, and model training
+- **`fastapi-project` template**: If your inference service uses FastAPI, that template provides deeper coverage of API routing, middleware, authentication, and Alembic migrations.
+- **`kubernetes-project` template**: If your ML workloads run on Kubernetes or Red Hat OpenShift AI, that template adds deployment manifests, resource limits for GPU requests, and monitoring with Prometheus and Grafana.
+- **`data-pipeline` template**: If your project includes data preprocessing, feature pipelines, or ETL work feeding into model training, that template covers Spark, Beam, schema evolution, and data quality frameworks.
+- **`python-project` template**: This AI/ML template assumes Python foundations. The `python-project` template has deeper coverage of ruff, mypy strict mode, and general Python testing patterns that apply to all Python-based ML work.
+
 ## Review Checklist
 
 Before merging changes:

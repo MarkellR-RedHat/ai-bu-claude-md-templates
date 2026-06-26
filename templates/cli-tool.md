@@ -638,6 +638,20 @@ python -m build                 # Python
 
 **Not handling SIGINT gracefully.** Claude lets the tool crash with a stack trace on Ctrl+C. Handle SIGINT to clean up temporary files, close connections, and exit with code 130.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type. Use `/suggest-template deep` to detect the CLI framework (Cobra, Click/Typer, Clap) from dependency files and source imports.
+- **`/compose-template cli-tool + [other]`**: Merge this template with another. Common combinations:
+  - `cli-tool + go` for Cobra-based Go CLI tools (adds Go error handling, concurrency, and table-driven test patterns)
+  - `cli-tool + rust` for Clap-based Rust CLI tools (adds clippy pedantic lints, cargo-deny, and thiserror/anyhow error patterns)
+  - `cli-tool + python` for Click or Typer CLI tools (adds ruff, mypy, and pytest patterns)
+  - `cli-tool + kubernetes` for kubectl plugins or CLI tools that interact with Kubernetes clusters
+- **`go-project` template**: If your CLI is built with Go and Cobra, that template covers Go-specific conventions, golangci-lint, and testing patterns beyond what this CLI template provides.
+- **`rust-project` template**: If your CLI is built with Rust and Clap, that template covers clippy, cargo-audit, tokio async patterns, and Rust-specific error handling.
+- **`python-project` template**: If your CLI is built with Click or Typer, that template covers ruff, mypy, pytest, and Python packaging.
+
 ### Code review checklist
 
 Before merging any CLI change:

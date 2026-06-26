@@ -707,6 +707,21 @@ These are patterns Claude tends to produce that will fail code review. Watch for
 
 **Generating overly generic code.** When asked to implement something, Claude sometimes uses `interface{}` or `any` when a concrete type would be clearer and safer. Use generics or concrete types. Reserve `any` for genuinely polymorphic cases.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. Use `/suggest-template deep` to parse `go.mod` imports and CI configuration in detail.
+- **`/compose-template go + [other]`**: Merge this template with another. Common combinations:
+  - `go + kubernetes` for Go services deployed on Kubernetes or OpenShift
+  - `go + operator-sdk` for Kubernetes operators built with controller-runtime
+  - `go + helm-chart` for Go projects that include a Helm chart for deployment
+  - `go + cli-tool` for Cobra-based command-line tools
+  - `go + kubernetes + helm-chart` for the full operator stack (controller + chart + cluster config)
+- **`operator-sdk` template**: If your project is a Kubernetes operator using controller-runtime, that template covers reconciliation loops, finalizers, CRD design, and OLM packaging in depth.
+- **`kubernetes-project` template**: If your Go service runs on Kubernetes but is not an operator, that template adds pod security, RBAC, network policies, and deployment patterns.
+- **`cli-tool` template**: If your Go project is a Cobra CLI tool, that template adds shell completion, config file handling, output formatting, and distribution patterns.
+
 ## Review Checklist
 
 Before merging:

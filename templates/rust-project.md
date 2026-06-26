@@ -752,6 +752,17 @@ These are patterns Claude tends to produce that will fail code review. Watch for
 
 **Putting `mod tests` at the top of the file.** Claude sometimes places the test module before the implementation code. Put `#[cfg(test)] mod tests` at the bottom of the file, after all implementation code.
 
+## Related Templates and Commands
+
+If your project spans multiple domains, use these tools to extend this CLAUDE.md:
+
+- **`/suggest-template`**: Run this command in your project directory to auto-detect the project type and get a tailored template recommendation. Use `/suggest-template deep` to parse `Cargo.toml` dependencies and detect framework patterns.
+- **`/compose-template rust + [other]`**: Merge this template with another. Common combinations:
+  - `rust + cli-tool` for Clap-based command-line tools (adds shell completion, config handling, distribution patterns)
+  - `rust + kubernetes` for Rust services deployed on Kubernetes or OpenShift
+- **`cli-tool` template**: If your Rust project is a Clap CLI, that template provides argument parsing patterns, output formatting, `--dry-run` support, and packaging for Homebrew, RPM, and crates.io.
+- **`kubernetes-project` template**: If your Rust service runs in containers on Kubernetes, that template adds pod security, RBAC, network policies, and deployment manifests.
+
 ## Review Checklist
 
 - [ ] All tests pass (`cargo test --all-features`)
