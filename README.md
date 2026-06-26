@@ -1,22 +1,30 @@
 # CLAUDE.md Templates
 
-The difference between a good Claude Code session and a frustrating one is usually the CLAUDE.md file. A good one means Claude writes code that passes review on the first try.
+**Claude generates Python that looks like Go when it has no CLAUDE.md.**
 
-## See the Difference
+Without project conventions, Claude guesses. It picks `requests` instead of `httpx`, skips type hints, uses `print()` instead of structured logging, and returns raw dicts instead of Pydantic models. The code compiles, but it would never pass review.
 
-Here is the same prompt, with and without a proper CLAUDE.md.
+A CLAUDE.md file fixes this. Drop a template into your project root, and Claude writes code that matches your stack on the first try.
+
+## Before and After
 
 **Prompt:** "Write a function to fetch user data from our API"
 
-### Without CLAUDE.md
-
-Claude guesses at your conventions and produces something generic:
+<table>
+<tr>
+<th>Without CLAUDE.md</th>
+<th>With CLAUDE.md (Python template)</th>
+</tr>
+<tr>
+<td>
 
 ```python
 import requests
 
 def get_user(user_id):
-    response = requests.get(f"https://api.example.com/users/{user_id}")
+    response = requests.get(
+        f"https://api.example.com/users/{user_id}"
+    )
     if response.status_code == 200:
         return response.json()
     else:
@@ -24,11 +32,10 @@ def get_user(user_id):
         return None
 ```
 
-No type hints. Synchronous `requests` instead of `httpx`. `print` instead of structured logging. Raw dict instead of a model. No error handling beyond a print statement. This code would not survive review.
+No type hints. Synchronous `requests`. `print` instead of logging. Raw dict return. No real error handling.
 
-### With CLAUDE.md (Python template installed)
-
-Claude reads your conventions and produces code that matches your stack:
+</td>
+<td>
 
 ```python
 import httpx
@@ -46,60 +53,99 @@ class User(BaseModel):
     display_name: str
 
 
-async def get_user(client: httpx.AsyncClient, user_id: int) -> User:
-    """Fetch a user by ID from the upstream API."""
+async def get_user(
+    client: httpx.AsyncClient, user_id: int
+) -> User:
+    """Fetch a user by ID."""
     try:
         response = await client.get(f"/users/{user_id}")
         response.raise_for_status()
     except httpx.HTTPStatusError as exc:
         if exc.response.status_code == 404:
-            raise NotFoundError(f"User {user_id} not found") from exc
-        logger.error("api_request_failed", user_id=user_id, status=exc.response.status_code)
-        raise APIError(f"Failed to fetch user {user_id}") from exc
-
+            raise NotFoundError(
+                f"User {user_id} not found"
+            ) from exc
+        logger.error(
+            "api_request_failed",
+            user_id=user_id,
+            status=exc.response.status_code,
+        )
+        raise APIError(
+            f"Failed to fetch user {user_id}"
+        ) from exc
     return User.model_validate(response.json())
 ```
 
-Type hints throughout. Async with `httpx`. Pydantic model for the response. Custom exceptions. Structured logging. Dependency injection via the client parameter. This is the code you would have written yourself.
+Type hints. Async `httpx`. Pydantic model. Custom exceptions. Structured logging. Dependency injection.
+
+</td>
+</tr>
+</table>
 
 The only difference is a CLAUDE.md file in the project root.
+
+## Quick Start
+
+### 30-second install
+
+```bash
+git clone https://github.com/MarkellR-RedHat/ai-bu-claude-md-templates.git
+cd ai-bu-claude-md-templates
+./install.sh --template python-project --dir ~/my-project
+```
+
+That copies the Python template into `~/my-project/CLAUDE.md`. Open Claude Code in that directory and you are done.
+
+### Not sure which template? Use interactive mode
+
+```bash
+./install.sh --interactive
+```
+
+Answer three questions about your project and get a recommendation.
+
+### Browse all templates first
+
+```bash
+./install.sh --list       # See what's available
+./install.sh --preview    # Read the first 20 lines of each template
+./install.sh              # Pick from the full list
+```
 
 ## Available Templates
 
 ### Code Projects
 
-| Template | File | Description |
-|---|---|---|
-| Python | [`python-project.md`](templates/python-project.md) | ruff, mypy, pytest, Pydantic, structlog, security patterns |
-| Go | [`go-project.md`](templates/go-project.md) | golangci-lint, table-driven tests, concurrency, error wrapping |
-| Rust | [`rust-project.md`](templates/rust-project.md) | clippy, cargo-deny, tokio async, unsafe policy, fuzzing |
-| FastAPI | [`fastapi-project.md`](templates/fastapi-project.md) | Pydantic v2, SQLAlchemy 2.0, Alembic, dependency injection |
-| AI/ML | [`ai-ml-project.md`](templates/ai-ml-project.md) | PyTorch, vLLM, distributed training, RAG, GPU profiling |
-| Data Pipeline | [`data-pipeline.md`](templates/data-pipeline.md) | Spark, Beam, schema evolution, idempotency, data quality |
-| CLI Tool | [`cli-tool.md`](templates/cli-tool.md) | Cobra/Click/Clap, config handling, shell completion, releases |
+| Template | What it covers |
+|---|---|
+| [`python-project`](templates/python-project.md) | ruff, mypy, pytest, Pydantic, structlog, security patterns |
+| [`go-project`](templates/go-project.md) | golangci-lint, table-driven tests, concurrency, error wrapping |
+| [`rust-project`](templates/rust-project.md) | clippy, cargo-deny, tokio async, unsafe policy, fuzzing |
+| [`fastapi-project`](templates/fastapi-project.md) | Pydantic v2, SQLAlchemy 2.0, Alembic, dependency injection |
+| [`ai-ml-project`](templates/ai-ml-project.md) | PyTorch, vLLM, distributed training, RAG, GPU profiling |
+| [`data-pipeline`](templates/data-pipeline.md) | Spark, Beam, schema evolution, idempotency, data quality |
+| [`cli-tool`](templates/cli-tool.md) | Cobra/Click/Clap, config handling, shell completion, releases |
 
 ### Infrastructure Projects
 
-| Template | File | Description |
-|---|---|---|
-| Kubernetes | [`kubernetes-project.md`](templates/kubernetes-project.md) | Pod security, network policies, RBAC, HPA, GitOps |
-| Operator SDK | [`operator-sdk.md`](templates/operator-sdk.md) | controller-runtime, reconciliation, finalizers, webhooks, envtest |
-| Helm Chart | [`helm-chart.md`](templates/helm-chart.md) | Template patterns, values schema, hooks, OCI registries |
+| Template | What it covers |
+|---|---|
+| [`kubernetes-project`](templates/kubernetes-project.md) | Pod security, network policies, RBAC, HPA, GitOps |
+| [`operator-sdk`](templates/operator-sdk.md) | controller-runtime, reconciliation, finalizers, webhooks, envtest |
+| [`helm-chart`](templates/helm-chart.md) | Template patterns, values schema, hooks, OCI registries |
 
 ### Content Projects
 
-| Template | File | Description |
-|---|---|---|
-| Content Writing | [`content-writing.md`](templates/content-writing.md) | Editorial standards, SEO, content lifecycle, accessibility |
-| Proposals | [`proposals.md`](templates/proposals.md) | CFP structure, talk design, demo planning, audience analysis |
-| Documentation | [`documentation.md`](templates/documentation.md) | Diataxis framework, docs-as-code, versioning, Vale linting |
-| DevRel | [`general-devrel.md`](templates/general-devrel.md) | Developer journey, code samples, workshops, community metrics |
+| Template | What it covers |
+|---|---|
+| [`content-writing`](templates/content-writing.md) | Editorial standards, SEO, content lifecycle, accessibility |
+| [`proposals`](templates/proposals.md) | CFP structure, talk design, demo planning, audience analysis |
+| [`documentation`](templates/documentation.md) | Diataxis framework, docs-as-code, versioning, Vale linting |
+| [`general-devrel`](templates/general-devrel.md) | Developer journey, code samples, workshops, community metrics |
 
-## Template Comparison Matrix
+### Which template do I need?
 
-Use this matrix to find the right template when you are not sure which one fits.
-
-| If your project... | Primary Template | Consider Combining With |
+| If your project... | Start with | Consider adding |
 |---|---|---|
 | Is a Python app or library | `python-project` | `kubernetes-project` for deployment |
 | Uses FastAPI | `fastapi-project` | `ai-ml-project` if serving models |
@@ -115,104 +161,49 @@ Use this matrix to find the right template when you are not sure which one fits.
 | Is a documentation site | `documentation` | - |
 | Is a DevRel project with demos | `general-devrel` | Language template for code quality |
 
-## Quick Start
+## Why These Templates Work
 
-### Option 1: Interactive installer
+Most CLAUDE.md files are too vague to change behavior. "Write clean code" tells Claude nothing it does not already do. These templates are specific enough to shift actual output.
 
-The interactive mode asks questions about your project and recommends a template.
-
-```bash
-git clone https://github.com/MarkellR-RedHat/ai-bu-claude-md-templates.git
-cd ai-bu-claude-md-templates
-chmod +x install.sh
-./install.sh --interactive
-```
-
-### Option 2: Direct install
-
-If you already know which template you want:
-
-```bash
-./install.sh --template python-project --dir ~/my-project
-```
-
-### Option 3: Standard selection
-
-Browse all templates and pick one:
-
-```bash
-./install.sh
-```
-
-### Option 4: Preview before choosing
-
-See the first 20 lines of each template before selecting:
-
-```bash
-./install.sh --preview
-```
-
-## Slash Commands
-
-This repo includes Claude Code slash commands for template management.
-
-### `/suggest-template`
-
-Analyzes your current project (language, frameworks, file structure) and recommends which template to use. Shows a side-by-side comparison when multiple templates might fit.
-
-```
-/suggest-template
-```
-
-Or provide context:
-
-```
-/suggest-template this is a FastAPI app that serves ML models
-```
-
-### `/compose-template`
-
-Combines multiple templates into a single CLAUDE.md. Merges sections intelligently, deduplicates shared advice, and produces a unified file.
-
-```
-/compose-template python + kubernetes
-/compose-template fastapi + ai-ml
-/compose-template go + helm-chart + kubernetes
-```
-
-To use these commands, add this repo as a command source in your Claude Code settings or copy the `commands/` directory into your project's `.claude/commands/` directory.
-
-## Customizing a Template
-
-The template works out of the box. Drop it in as `CLAUDE.md` and Claude Code will follow the conventions immediately. Customization makes it better but is not required.
-
-When you are ready to tailor it to your project:
-
-1. **Search for TODO markers.** Every template has `<!-- TODO: ... -->` comments at the top. These mark the spots where project-specific details (repo name, tech stack, directory layout) improve accuracy. Work through them when you have five minutes.
-2. **Update the tech stack** to match what you actually use. If the template says `httpx` but you use `aiohttp`, change it. Claude will follow whatever the file says.
-3. **Remove sections that do not apply.** Using Django instead of FastAPI? Delete the FastAPI-specific advice. Shorter files are faster for Claude to process and less likely to go stale.
-4. **Add your team's patterns.** If your team has conventions that are not in the template (naming schemes, specific banned patterns, required review steps), add them. The template gives you the structure; fill it with your reality.
-
-The goal is a file that stays accurate for months, not one you have to update every sprint.
-
-## What Makes These Templates Effective
-
-Most CLAUDE.md files fail because they are either too vague to change behavior or too specific to stay current. These templates hit the middle ground.
-
-Here is the contrast:
-
-| Generic CLAUDE.md | These Templates |
+| Vague CLAUDE.md | These templates |
 |---|---|
 | "Write clean code" | "Use `thiserror` for library error types and `anyhow` for application binaries" |
 | "Write tests" | "Use table-driven tests with `t.Run` subtests. Cover error paths, not just happy paths" |
 | "Handle errors properly" | "Wrap errors with `%w` to preserve the chain. Never discard errors with `_ =`" |
 | "Use logging" | "Use `structlog` with bound loggers. Never use `print()` or `logging.warning(f'...')`" |
 | "Follow security best practices" | "Validate all path inputs against traversal. Use `secrets.compare_digest` for token comparison" |
-| "Keep dependencies updated" | "Run `cargo-deny check` in CI. Ban `openssl-sys` in favor of `rustls`" |
 
-The generic version sounds reasonable but changes nothing. Claude already "writes clean code" by default. The specific version changes actual output. Claude will reach for `thiserror` instead of hand-rolling error enums. It will write table-driven tests instead of one-assertion test functions. It will use `structlog` instead of `print`.
+The specific version changes what Claude actually generates. Every template in this repo follows that principle.
 
-Every template in this repo follows that principle: specific enough to change Claude's behavior, general enough to stay accurate across your codebase.
+## Slash Commands
+
+Two slash commands ship with this repo for template management inside Claude Code.
+
+**`/suggest-template`** analyzes your current project (language, frameworks, file structure) and recommends the right template. Optionally pass context:
+
+```
+/suggest-template this is a FastAPI app that serves ML models
+```
+
+**`/compose-template`** combines multiple templates into a single CLAUDE.md with intelligent section merging:
+
+```
+/compose-template python + kubernetes
+/compose-template fastapi + ai-ml
+```
+
+To use these commands, add this repo as a command source in your Claude Code settings, or copy the `commands/` directory into your project's `.claude/commands/` directory.
+
+## Customizing a Template
+
+Templates work out of the box. Drop one in as `CLAUDE.md` and Claude follows the conventions immediately. Customization makes them better, but it is not required.
+
+When you are ready to tailor a template:
+
+1. **Search for TODO markers.** Every template has `<!-- TODO: ... -->` comments at the top marking spots where project-specific details improve accuracy.
+2. **Update the tech stack** to match what you actually use. If the template says `httpx` but you use `aiohttp`, change it.
+3. **Remove sections that do not apply.** Shorter files are faster for Claude to process and less likely to go stale.
+4. **Add your team's patterns.** Naming schemes, banned patterns, required review steps. The template gives you the structure; fill it with your reality.
 
 ## Install Script Reference
 
@@ -226,17 +217,21 @@ Options:
   -i, --interactive           Guided template selection based on your project
   -t, --template NAME         Install a specific template by name
   -d, --dir PATH              Set the target directory
+  -c, --combine NAMES         Combine templates separated by +
+      --check                 Check existing CLAUDE.md status and remaining TODOs
 ```
 
 Examples:
 
 ```bash
-./install.sh                              # Standard selection mode
-./install.sh --interactive                 # Answer questions, get a recommendation
-./install.sh --template go-project         # Install Go template directly
-./install.sh -t fastapi-project -d ~/app   # Install FastAPI template to ~/app
-./install.sh --preview                     # Preview templates before choosing
-./install.sh --list                        # List all available templates
+./install.sh                                       # Standard selection mode
+./install.sh --interactive                          # Answer questions, get a recommendation
+./install.sh --template go-project                  # Install Go template directly
+./install.sh -t fastapi-project -d ~/app            # Install FastAPI template to ~/app
+./install.sh --preview                              # Preview templates before choosing
+./install.sh --list                                 # List all available templates
+./install.sh --combine "python-project + kubernetes-project"  # Combine templates
+./install.sh --check -d ~/myapp                     # Check existing CLAUDE.md status
 ```
 
 ## Contributing
@@ -260,10 +255,10 @@ Every template must include:
 ### Style rules
 
 - Write in a direct, practical voice. No fluff.
-- Use imperative mood for instructions
-- Be specific. "Functions must not exceed 50 lines" beats "write clean code"
-- No em dashes. Use commas, periods, semicolons, or "and" instead
-- Include concrete code examples where they help
+- Use imperative mood for instructions.
+- Be specific. "Functions must not exceed 50 lines" beats "write clean code."
+- No em dashes. Use commas, periods, semicolons, or "and" instead.
+- Include concrete code examples where they help.
 
 ### Testing your template
 

@@ -1,18 +1,34 @@
 #!/usr/bin/env bash
+# ============================================================
+# CLAUDE.md Template Installer
+#
+# Installs curated CLAUDE.md templates into your project so
+# Claude Code follows your conventions from the first prompt.
+#
+# Usage:
+#   ./install.sh                          Select and install a template
+#   ./install.sh --interactive            Guided selection
+#   ./install.sh -t python-project -d .   Direct install
+#   ./install.sh --help                   Full option list
+# ============================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMPLATES_DIR="${SCRIPT_DIR}/templates"
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[0;33m'
-CYAN='\033[0;36m'
-BOLD='\033[1m'
-DIM='\033[2m'
-NC='\033[0m' # No Color
+# Colors (disabled automatically when stdout is not a terminal)
+if [[ -t 1 ]]; then
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    BLUE='\033[0;34m'
+    YELLOW='\033[0;33m'
+    CYAN='\033[0;36m'
+    BOLD='\033[1m'
+    DIM='\033[2m'
+    NC='\033[0m'
+else
+    RED='' GREEN='' BLUE='' YELLOW='' CYAN='' BOLD='' DIM='' NC=''
+fi
 
 # Template metadata: description, best-for, and category for each template
 declare -A TEMPLATE_DESC
@@ -125,33 +141,34 @@ if [ "${SHOW_HELP}" = true ]; then
     echo ""
     echo -e "${BOLD}CLAUDE.md Template Installer${NC}"
     echo ""
-    echo "Usage: ./install.sh [OPTIONS]"
+    echo "  Installs curated CLAUDE.md templates so Claude Code follows"
+    echo "  your project conventions from the first prompt."
     echo ""
-    echo "Options:"
+    echo -e "${BOLD}Usage:${NC} ./install.sh [OPTIONS]"
+    echo ""
+    echo -e "${BOLD}Options:${NC}"
     echo "  -h, --help                  Show this help message and exit"
     echo "  -l, --list                  List available templates and exit"
     echo "  -p, --preview               Preview template contents before selecting"
-    echo "  -i, --interactive           Walk through template selection with guided questions"
-    echo "  -t, --template NAME         Install a specific template by name (skip selection)"
-    echo "  -d, --dir PATH              Set the target directory (skip directory prompt)"
+    echo "  -i, --interactive           Guided selection based on your project type"
+    echo "  -t, --template NAME         Install a specific template by name"
+    echo "  -d, --dir PATH              Set the target directory (default: current directory)"
     echo "  -c, --combine NAMES         Combine two or more templates separated by +"
-    echo "      --check                 Check if target directory has a CLAUDE.md and report its status"
+    echo "      --check                 Report status and remaining TODOs in existing CLAUDE.md"
     echo ""
-    echo "Modes:"
-    echo "  Default                     Show templates, pick one, copy to target directory"
+    echo -e "${BOLD}Modes:${NC}"
+    echo "  Default                     Browse templates, pick one, install to target directory"
     echo "  Interactive (--interactive)  Answer questions about your project, get a recommendation"
     echo "  Combine (--combine)         Concatenate multiple templates into one CLAUDE.md"
     echo "  Check (--check)             Report age and remaining TODOs in existing CLAUDE.md"
     echo ""
-    echo "Examples:"
-    echo "  ./install.sh                                       # Standard selection mode"
-    echo "  ./install.sh --interactive                          # Guided template selection"
-    echo "  ./install.sh --template python-project              # Install Python template directly"
-    echo "  ./install.sh -t go-project -d ~/myapp               # Install Go template to ~/myapp"
-    echo "  ./install.sh --preview                              # Preview templates before choosing"
-    echo "  ./install.sh --list                                 # List all available templates"
-    echo "  ./install.sh --combine \"python-project + kubernetes-project\"  # Combine templates"
-    echo "  ./install.sh --check -d ~/myapp                     # Check existing CLAUDE.md status"
+    echo -e "${BOLD}Examples:${NC}"
+    echo "  ./install.sh                                       # Browse and pick"
+    echo "  ./install.sh --interactive                          # Guided selection"
+    echo "  ./install.sh -t python-project -d ~/myapp          # Direct install"
+    echo "  ./install.sh --preview                              # Preview before choosing"
+    echo "  ./install.sh --combine \"python + kubernetes\"        # Merge templates"
+    echo "  ./install.sh --check -d ~/myapp                     # Check existing CLAUDE.md"
     echo ""
     exit 0
 fi
@@ -164,6 +181,7 @@ echo ""
 # Check that templates directory exists
 if [ ! -d "${TEMPLATES_DIR}" ]; then
     echo -e "${RED}Error: Templates directory not found at ${TEMPLATES_DIR}.${NC}"
+    echo -e "${RED}Make sure you are running this script from the cloned repository.${NC}"
     exit 1
 fi
 
@@ -179,8 +197,12 @@ done
 
 if [ ${#templates[@]} -eq 0 ]; then
     echo -e "${RED}Error: No template files found in ${TEMPLATES_DIR}.${NC}"
+    echo -e "${RED}The templates/ directory exists but contains no .md files.${NC}"
     exit 1
 fi
+
+echo -e "  ${DIM}Found ${#templates[@]} templates in ${TEMPLATES_DIR}${NC}"
+echo ""
 
 # Function to display template list
 show_template_list() {
@@ -348,8 +370,18 @@ install_template() {
         fi
     fi
 
+    # Show what we are installing
+    local line_count
+    line_count=$(wc -l < "${template_path}" | tr -d ' ')
+    echo ""
+    echo -e "  ${DIM}Installing ${template_name} (${line_count} lines) ...${NC}"
+
     # Copy the template
-    cp "${template_path}" "${target_file}"
+    if ! cp "${template_path}" "${target_file}"; then
+        echo -e "${RED}Error: Failed to copy template to ${target_file}.${NC}"
+        echo -e "${RED}Check that you have write permission to the target directory.${NC}"
+        exit 1
+    fi
 
     echo ""
     echo -e "${GREEN}Done. CLAUDE.md has been created at:${NC}"
